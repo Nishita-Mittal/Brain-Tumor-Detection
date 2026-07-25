@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroScan AI — Brain Tumor Classification</title>
+    <meta name="description" content="Advanced AI-powered brain tumor classification from MRI scans using Hybrid CNN-SVM with explainable heatmaps.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="particles-bg" class="particles-bg"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <div class="brain-icon">🧠</div>
+            <span class="brand-text">NeuroScan <span class="brand-accent">AI</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#upload-section" class="nav-link">Analyze</a>
+            <a href="#how-it-works" class="nav-link">How It Works</a>
+            <div class="nav-badge"><span class="badge-dot"></span>Model Ready</div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge">⚡ Powered by Super-Hybrid V2 Architecture</div>
+            <h1 class="hero-title">Brain Tumor<br><span class="gradient-text">Classification</span></h1>
+            <p class="hero-subtitle">Upload an MRI scan and get AI-powered classification with view-aware preprocessing and ScoreCAM explainability heatmaps.</p>
+            <a href="#upload-section" class="hero-cta" id="hero-cta-btn">
+                <span>Start Analysis</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+            </a>
+        </div>
+        <div class="hero-visual">
+            <div class="orbit-ring ring-1"></div>
+            <div class="orbit-ring ring-2"></div>
+            <div class="orbit-ring ring-3"></div>
+            <div class="brain-emoji-large">🧠</div>
+        </div>
+    </section>
+
+    <!-- STATS BAR -->
+    <section class="stats-bar">
+        <div class="stat-item"><span class="stat-value">4</span><span class="stat-label">Tumor Classes</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-value">3072-D</span><span class="stat-label">Feature Vectors</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-value">Hybrid</span><span class="stat-label">ResNet50 + DeepCNN + SVM</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-value">XAI</span><span class="stat-label">ScoreCAM Heatmaps</span></div>
+    </section>
+
+    <!-- UPLOAD SECTION (simple — just upload + classify) -->
+    <section class="upload-section" id="upload-section">
+        <div class="section-header">
+            <h2 class="section-title">Upload <span class="gradient-text">MRI Scan</span></h2>
+            <p class="section-desc">Drag & drop or click to select a brain MRI image for instant classification</p>
+        </div>
+        <div class="upload-container">
+            <div class="upload-zone" id="upload-zone">
+                <div class="upload-icon-wrapper">
+                    <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+                <p class="upload-text">Drop your MRI image here</p>
+                <p class="upload-subtext">or <span class="upload-browse">browse files</span></p>
+                <p class="upload-formats">Supports: JPG, PNG, BMP, TIFF</p>
+                <input type="file" id="file-input" accept="image/*" hidden>
+            </div>
+
+            <!-- Preview + Classify button -->
+            <div class="preview-container" id="preview-container" style="display:none;">
+                <div class="preview-card">
+                    <img id="preview-image" src="" alt="MRI Preview">
+                    <div class="preview-info">
+                        <span id="preview-filename" class="preview-name"></span>
+                        <span id="preview-size" class="preview-size"></span>
+                    </div>
+                    <button class="preview-remove" id="preview-remove" title="Remove">✕</button>
+                </div>
+                <button class="analyze-btn" id="analyze-btn">
+                    <span class="analyze-text">🔬 Classify Tumor — Instant Result</span>
+                    <div class="analyze-loader" id="analyze-loader" style="display:none;">
+                        <div class="spinner"></div>
+                        <span>Classifying...</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESULTS SECTION -->
+    <section class="results-section" id="results-section" style="display:none;">
+
+        <!-- Error -->
+        <div class="error-card" id="error-card" style="display:none;">
+            <div class="error-icon">⚠️</div>
+            <h3 class="error-title">Analysis Failed</h3>
+            <p class="error-message" id="error-message"></p>
+            <button class="retry-btn" id="retry-btn">Try Again</button>
+        </div>
+
+        <div id="results-content" style="display:none;">
+
+            <!-- Prediction Header -->
+            <div class="result-header" id="result-header">
+                <div class="result-badge" id="result-badge">DIAGNOSIS RESULT</div>
+                <div class="result-main">
+                    <div class="result-ring-container">
+                        <svg class="result-ring" viewBox="0 0 120 120" id="confidence-ring">
+                            <circle class="ring-bg" cx="60" cy="60" r="52" />
+                            <circle class="ring-fill" cx="60" cy="60" r="52" id="ring-fill" />
+                        </svg>
+                        <div class="ring-text">
+                            <span class="ring-value" id="ring-value">0</span>
+                            <span class="ring-percent">%</span>
+                        </div>
+                    </div>
+                    <div class="result-info">
+                        <h2 class="result-class" id="result-class">—</h2>
+                        <p class="result-fullname" id="result-fullname">—</p>
+                        <div class="result-severity" id="result-severity">
+                            <span class="severity-dot"></span>
+                            <span class="severity-text"></span>
+                        </div>
+                        <p class="result-view" id="result-view"></p>
+                        <p class="result-time" id="result-time"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Probability Bars -->
+            <div class="probabilities-card glass-card">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                    Class Probabilities
+                </h3>
+                <div class="prob-bars" id="prob-bars"></div>
+            </div>
+
+            <!-- Original Image -->
+            <div class="images-card glass-card">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    Uploaded MRI Scan
+                </h3>
+                <div class="image-display">
+                    <div class="image-pair single">
+                        <div class="image-box">
+                            <span class="image-label">Original MRI</span>
+                            <img id="img-original" src="" alt="Original MRI">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEATMAP SECTION — Optional, user triggered -->
+            <div class="heatmap-section glass-card" id="heatmap-section">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 8v4M12 16h.01"/></svg>
+                    Explainable AI — ScoreCAM Heatmap
+                </h3>
+                <p class="heatmap-intro">Generate a ScoreCAM heatmap to see which brain regions influenced the AI's decision. Uses activation-based weighting with CBAM refinement for precise tumor localization.</p>
+
+                <button class="heatmap-btn" id="heatmap-btn">
+                    <span class="heatmap-btn-text">🔥 Generate ScoreCAM Heatmap — Precision</span>
+                    <div class="heatmap-btn-loader" id="heatmap-btn-loader" style="display:none;">
+                        <div class="spinner"></div>
+                        <span>Generating heatmap...</span>
+                    </div>
+                </button>
+
+                <!-- Heatmap result (appears after generation) -->
+                <div class="heatmap-result" id="heatmap-result" style="display:none;">
+                    <div class="image-tabs">
+                        <button class="img-tab active" data-tab="side-by-side" id="tab-side-by-side">Side by Side</button>
+                        <button class="img-tab" data-tab="original" id="tab-original">Original</button>
+                        <button class="img-tab" data-tab="heatmap" id="tab-heatmap">Heatmap</button>
+                    </div>
+                    <div class="image-display">
+                        <div class="image-pair" id="image-pair">
+                            <div class="image-box" id="hm-orig-box">
+                                <span class="image-label">Original MRI</span>
+                                <img id="hm-img-original" src="" alt="Original MRI">
+                            </div>
+                            <div class="image-box" id="hm-heat-box">
+                                <span class="image-label">ScoreCAM Heatmap</span>
+                                <img id="hm-img-heatmap" src="" alt="Heatmap">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="heatmap-legend">
+                        <span class="legend-label">Low Importance</span>
+                        <div class="legend-gradient"></div>
+                        <span class="legend-label">High Importance</span>
+                    </div>
+                    <p class="heatmap-desc">Warmer colors (red/yellow) indicate brain regions with the highest activation-based importance — these are the most critical for the AI's classification decision.</p>
+                    <p class="heatmap-time" id="heatmap-time"></p>
+                </div>
+            </div>
+
+            <!-- Tumor Information -->
+            <div class="tumor-info-card glass-card" id="tumor-info-card">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    Medical Information
+                </h3>
+                <div class="tumor-grid" id="tumor-grid"></div>
+            </div>
+
+            <!-- Symptoms & Treatment -->
+            <div class="details-row" id="details-row">
+                <div class="symptoms-card glass-card" id="symptoms-card">
+                    <h3 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        Common Symptoms
+                    </h3>
+                    <ul class="symptoms-list" id="symptoms-list"></ul>
+                </div>
+                <div class="treatment-card glass-card" id="treatment-card">
+                    <h3 class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Treatment Options
+                    </h3>
+                    <ul class="treatment-list" id="treatment-list"></ul>
+                </div>
+            </div>
+
+            <!-- Technical Details -->
+            <div class="tech-card glass-card">
+                <h3 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    Technical Details
+                </h3>
+                <div class="tech-grid" id="tech-grid"></div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="disclaimer-card">
+                <p>⚠️ <strong>Disclaimer:</strong> This tool is for educational and research purposes only. It is NOT a substitute for professional medical diagnosis.</p>
+            </div>
+
+            <div class="new-analysis-wrapper">
+                <button class="new-analysis-btn" id="new-analysis-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                    New Analysis
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section" id="how-it-works">
+        <div class="section-header">
+            <h2 class="section-title">How It <span class="gradient-text">Works</span></h2>
+            <p class="section-desc">Our hybrid architecture combines deep learning with classical machine learning</p>
+        </div>
+        <div class="pipeline-grid">
+            <div class="pipeline-step glass-card"><div class="pipe-number">01</div><div class="pipe-icon">📤</div><h4>Upload MRI</h4><p>Upload a brain MRI scan. The image is preprocessed to 224x224 pixels.</p></div>
+            <div class="pipeline-step glass-card"><div class="pipe-number">02</div><div class="pipe-icon">🧬</div><h4>Feature Extraction</h4><p>ResNet50 (2048-D) + DeepHybridCNN (1024-D) fused into 3072-D vector.</p></div>
+            <div class="pipeline-step glass-card"><div class="pipe-number">03</div><div class="pipe-icon">🎯</div><h4>SVM Classification</h4><p>RBF-kernel SVM classifies into 4 categories instantly.</p></div>
+            <div class="pipeline-step glass-card"><div class="pipe-number">04</div><div class="pipe-icon">🔥</div><h4>ScoreCAM Heatmap</h4><p>Precision XAI: activation-based maps show exact tumor location.</p></div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand"><span class="brain-icon">🧠</span><span>NeuroScan AI</span></div>
+            <p class="footer-text">Built with Super-Hybrid V2 (ResNet50 + DeepHybridCNN + SVM)</p>
+            <p class="footer-disclaimer">For educational and research purposes only.</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
