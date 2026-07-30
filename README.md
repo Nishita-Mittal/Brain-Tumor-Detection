@@ -304,37 +304,20 @@ http://127.0.0.1:5000
 
 # 📸 Application Screenshots
 
-> Add screenshots inside a folder named **screenshots** in your repository.
+## 🏠 Home Page
+![Home Page](screenshots/home.jpg)
 
-### 🏠 Home Page
+## 📤 Upload MRI Image
+![Upload MRI Image](screenshots/upload.jpg)
 
-```
-screenshots/home.png
-```
+## 📊 Prediction Result
+![Prediction Result](screenshots/result.jpg)
 
----
+## 🔥 Occlusion Heatmap
+![Occlusion Heatmap](screenshots/heatmap.jpg)
 
-### 📤 Upload MRI Image
-
-```
-screenshots/upload.png
-```
-
----
-
-### 📊 Prediction Result
-
-```
-screenshots/result.png
-```
-
----
-
-### 🔥 Occlusion Heatmap
-
-```
-screenshots/heatmap.png
-```
+## 📈 Dashboard
+![Dashboard](screenshots/dashboard.jpg)
 
 ---
 
